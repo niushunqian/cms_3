@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 命名空间的值为dao层接口的权限定名 -->
+<mapper namespace="com.bawei.dao.GoodsDao">
+	<select id="list" resultMap="goodsMap">
+		select * from goods join brand on goods.bid=brand.bid
+		join kind on goods.kid=kind.kid
+		<where>
+			<if test="gname!=null and ''!=gname">and gname like concat('%',#{gname},'%')</if>
+		</where>
+	</select>
+	<resultMap type="Goods" id="goodsMap">
+		<id property="gid" column="gid"/>
+		<result property="gname" column="gname"/>
+		<result property="egname" column="egname"/>
+		<result property="size" column="size"/>
+		<result property="price" column="price"/>
+		<result property="number" column="number"/>
+		<result property="bq" column="bq"/>
+		<result property="picture" column="picture"/>
+		<association property="kind" javaType="Kind">
+			<id property="kid" column="kid"/>
+			<result property="kname" column="kname"/>
+		</association>
+		<association property="brand" javaType="Brand">
+			<id property="bid" column="bid"/>
+			<result property="bname" column="bname"/>
+		</association>
+	</resultMap>
+	<delete id="delete">
+		delete from goods where gid in
+		<foreach collection="gid" item="g" close=")" open="(" separator=",">
+		g
+		</foreach>
+	</delete>
+	<select id="selectBrand" resultType="Brand">
+		select * from brand
+	</select>
+	<select id="selectKind" resultType="Kind">
+		select * from kind
+	</select>
+	<insert id="add">
+		insert into goods values(null,#{gname},#{egname},#{size},#{price},#{number},#{bq},#{picture},#{bid},#{kid})
+	</insert>
+	<select id="selectGoods" resultMap="goodsMap">
+		select * from goods join brand on goods.bid=brand.bid
+		join kind on goods.kid=kind.kid
+		where gid=#{gid}
+	</select>
+	<update id="upd">
+		update goods set gname=#{gname},egname=#{egname},size=#{size},price=#{price},number=#{number},bq=#{bq},picture=#{picture},bid=#{bid},kid=#{kid}
+	</update>
+</mapper>
